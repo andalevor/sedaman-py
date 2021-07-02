@@ -1,6 +1,14 @@
 from ctypes import cdll, c_void_p, c_size_t, c_double, Structure, Union, c_int8, c_int16, c_int32, c_int64, c_uint8, c_uint16, c_uint32, c_uint64, c_float, c_double, c_int, c_char_p, c_bool, c_char_p, create_string_buffer, POINTER
+import sys
 
-libsedaman = cdll.LoadLibrary('libsedaman.so')
+
+if sys.platform.startswith('linux'):
+    libsedaman = cdll.LoadLibrary('libsedaman.so')
+elif sys.platform.startswith('win32'):
+    import os
+    path = os.path.dirname(__file__)
+    os.add_dll_directory(path)
+    libsedaman = cdll.LoadLibrary('libsedaman.dll')
 
 
 class Error(Exception):
@@ -12,10 +20,10 @@ class ISEGY:
     def __init__(self, file_name):
         sedaman_ISEGY_new = libsedaman.sedaman_ISEGY_new
         sedaman_ISEGY_new.restype = c_void_p
-        sedaman_ISEGY_new.argtypes = [c_void_p, c_char_p]
+        sedaman_ISEGY_new.argtypes = [c_char_p, c_char_p]
         sedaman_ISEGY_has_trace = libsedaman.sedaman_ISEGY_has_trace
         sedaman_ISEGY_has_trace.restype = c_bool
-        sedaman_ISEGY_has_trace.argtypes = [c_void_p, c_char_p]
+        sedaman_ISEGY_has_trace.argtypes = [c_void_p]
         sedaman_ISEGY_read_trace = libsedaman.sedaman_ISEGY_read_trace
         sedaman_ISEGY_read_trace.restype = c_void_p
         sedaman_ISEGY_read_trace.argtypes = [c_void_p, c_char_p]
